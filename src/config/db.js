@@ -1,15 +1,22 @@
-import mongoose from "mongoose";
+// 👉 Mongoose import kar rahe hain
+import mongoose from 'mongoose'
 
-// Simple function to connect to MongoDB
+// ✅ Ek async function banate hain jo MongoDB se connect kare
 const connectDB = async () => {
   try {
-    // Connect to database
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log("Database connected successfully!");
-  } catch (error) {
-    console.log("Database connection failed:", error.message);
-    process.exit(1);
-  }
-};
+    // MongoDB URI ko .env file se le rahe hain
+    await mongoose.connect(process.env.MONGO_URI)
 
-export default connectDB;
+    // Agar success ho gaya
+    console.log('✅ MongoDB connected successfully')
+  } catch (error) {
+    // Agar koi error aaya to usse console me print karo
+    console.error('❌ MongoDB connection failed:', error.message)
+
+    // App ko exit kar do (1 = error exit code)
+    process.exit(1)
+  }
+}
+
+// 📤 Ye function export kar rahe hain taaki server.js me use ho sake
+export default connectDB
