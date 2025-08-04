@@ -1,35 +1,32 @@
-// Import mongoose library for MongoDB object modeling
-const mongoose = require('mongoose');
+import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
 
-// Define a new schema for the User model using mongoose Schema constructor
 const userSchema = new mongoose.Schema({
-  // Username field configuration
-  username: {
-    type: String,        // Data type is string
-    required: true,      // This field is mandatory
-    unique: true,        // Ensures no duplicate usernames in database
-    trim: true          // Removes whitespace from beginning and end
+  name: {
+    type: String,
+    required: true
   },
-  // Email field configuration
   email: {
-    type: String,        // Data type is string
-    required: true,      // This field is mandatory
-    unique: true,        // Ensures no duplicate emails in database
-    lowercase: true,     // Converts email to lowercase before saving
-    trim: true          // Removes whitespace from beginning and end
+    type: String,
+    required: true,
+    unique: true
   },
-  // Password field configuration
   password: {
-    type: String,        // Data type is string
-    required: true,      // This field is mandatory
-    minlength: 6        // Password must be at least 6 characters long
+    type: String,
+    required: true
   },
-  // Timestamp field for when user account was created
-  createdAt: {
-    type: Date,          // Data type is Date object
-    default: Date.now    // Automatically sets to current date/time when user is created
+  role: {
+    type: String,
+    default: 'user'
   }
-});
+}, { timestamps: true })
 
-// Export the User model based on the userSchema for use in other files
-module.exports = mongoose.model('User', userSchema);
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next()
+  const salt = await bcrypt.genSalt(10)
+  this.password = await bcrypt.hash(this.password, salt)
+  next()
+})
+
+const User = mongoose.model('User', userSchema)
+export default User
